@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 )
 
 var (
@@ -25,9 +26,7 @@ type Headers map[string]string
 
 func main() {
 	http.HandleFunc("/api/encurtar", Encurtador)
-	http.HandleFunc("/r/", func(response http.ResponseWriter, request *http.Request) {
-		fmt.Fprintf(response, "%s", "redirecionar")
-	})
+	http.HandleFunc("/r/", Redirecionador)
 
 	log.Fatal(http.ListenAndServe(
 		fmt.Sprintf(":%d", porta), nil))
@@ -47,6 +46,29 @@ func Encurtador(response http.ResponseWriter, request *http.Request) {
 	urlCurta := fmt.Sprintf("%s/r/%s", urlBase, mockedUrl)
 
 	responderCom(response, http.StatusCreated, Headers{"Location": urlCurta})
+}
+
+/*
+Redirecionador recupera a url original a partir do hash e realiza o redirect
+*/
+func Redirecionador(response http.ResponseWriter, request *http.Request) {
+	caminho := strings.Split(request.URL.Path, "/")
+	id := caminho[len(caminho)-1]
+
+	if url := buscar(id); url != nil {
+		urlDestino := url.(string)
+		http.Redirect(response, request, urlDestino, http.StatusMovedPermanently)
+	} else {
+		http.NotFound(response, request)
+	}
+}
+
+func buscar(id string) interface{} {
+	if id != mockedUrl {
+		return nil
+	}
+
+	return "https://www.github.com/mcmacedo"
 }
 
 func extrairUrl(request *http.Request) string {
