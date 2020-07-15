@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 	"strings"
+
+	"github.com/mcmacedo/go-url-shortener/url"
 )
 
 var (
@@ -42,10 +44,23 @@ func Encurtador(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	fmt.Println(extrairUrl(request))
-	urlCurta := fmt.Sprintf("%s/r/%s", urlBase, mockedUrl)
+	urlNova, nova, err := url.BuscarOuCriarNovaUrl(extrairUrl(request))
 
-	responderCom(response, http.StatusCreated, Headers{"Location": urlCurta})
+	if err != nil {
+		responderCom(response, http.StatusBadRequest, nil)
+		return
+	}
+
+	urlCurta := fmt.Sprintf("%s/r/%s", urlBase, urlNova.Id)
+	var status int
+
+	if nova {
+		status = http.StatusCreated
+	} else {
+		status = http.StatusOK
+	}
+
+	responderCom(response, status, Headers{"Location": urlCurta})
 }
 
 /*
