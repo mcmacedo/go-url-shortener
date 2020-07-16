@@ -60,3 +60,20 @@ func BuscarOuCriarNovaUrl(destino string) (novaUrl Url, nova bool, err error) {
 
 	return novaUrl, nova, err
 }
+
+/*
+Buscar pesquisa na base a url que possui o id igual ao informado e a retorna.
+*/
+func Buscar(id string) (url Url, ok bool) {
+	ok = false
+
+	for _, value := range urls {
+		if value.Id == id {
+			url = value
+			ok = true
+			break
+		}
+	}
+
+	return url, ok
+}
