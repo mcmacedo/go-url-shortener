@@ -10,15 +10,13 @@ import (
 )
 
 var (
-	porta     int
-	urlBase   string
-	mockedUrl string
+	porta   int
+	urlBase string
 )
 
 func init() {
 	porta = 8888
 	urlBase = fmt.Sprintf("http://locahost:%d", porta)
-	mockedUrl = "mocked6ZYm9"
 }
 
 /*
@@ -70,20 +68,11 @@ func Redirecionador(response http.ResponseWriter, request *http.Request) {
 	caminho := strings.Split(request.URL.Path, "/")
 	id := caminho[len(caminho)-1]
 
-	if url := buscar(id); url != nil {
-		urlDestino := url.(string)
-		http.Redirect(response, request, urlDestino, http.StatusMovedPermanently)
+	if urlEncontrada, ok := url.Buscar(id); ok {
+		http.Redirect(response, request, urlEncontrada.Destino, http.StatusMovedPermanently)
 	} else {
 		http.NotFound(response, request)
 	}
-}
-
-func buscar(id string) interface{} {
-	if id != mockedUrl {
-		return nil
-	}
-
-	return "https://www.github.com/mcmacedo"
 }
 
 func extrairUrl(request *http.Request) string {
