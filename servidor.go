@@ -16,7 +16,7 @@ var (
 
 func init() {
 	porta = 8888
-	urlBase = fmt.Sprintf("http://locahost:%d", porta)
+	urlBase = fmt.Sprintf("http://localhost:%d", porta)
 }
 
 /*
