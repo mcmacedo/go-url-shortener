@@ -25,6 +25,8 @@ Headers é um tipo 'map[string]string' para representar um cabeçalho http
 type Headers map[string]string
 
 func main() {
+	url.ConfigurarReposotirio(url.NovoRepositorioMemoria())
+
 	http.HandleFunc("/api/encurtar", Encurtador)
 	http.HandleFunc("/r/", Redirecionador)
 
