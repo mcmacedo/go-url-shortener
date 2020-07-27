@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -34,6 +35,7 @@ func main() {
 
 	http.HandleFunc("/api/encurtar", Encurtador)
 	http.HandleFunc("/r/", Redirecionador)
+	http.HandleFunc("/api/stats/", Visualizador)
 
 	log.Fatal(http.ListenAndServe(
 		fmt.Sprintf(":%d", porta), nil))
@@ -84,6 +86,28 @@ func Redirecionador(response http.ResponseWriter, request *http.Request) {
 	}
 }
 
+/*
+Visualizador recupera os Stats de uma url e os retorna se for encontrada.
+*/
+func Visualizador(response http.ResponseWriter, request *http.Request) {
+	caminho := strings.Split(request.URL.Path, "/")
+	id := caminho[len(caminho)-1]
+
+	if url, ok := url.Buscar(id); ok {
+		json, err := json.Marshal(url.Stats())
+
+		if err != nil {
+			response.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		responderComJSON(response, string(json))
+
+	} else {
+		http.NotFound(response, request)
+	}
+}
+
 func extrairUrl(request *http.Request) string {
 	url := make([]byte, request.ContentLength, request.ContentLength)
 	request.Body.Read(url)
@@ -101,6 +125,17 @@ func responderCom(
 	}
 
 	response.WriteHeader(status)
+}
+
+func responderComJSON(
+	response http.ResponseWriter,
+	json string) {
+
+	responderCom(response, http.StatusOK, Headers{
+		"Content-Type": "application/json",
+	})
+
+	fmt.Fprintf(response, json)
 }
 
 func registrarEstatisticas(ids <-chan string) {
