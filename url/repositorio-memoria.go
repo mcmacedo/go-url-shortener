@@ -1,7 +1,8 @@
 package url
 
 type repositorioMemoria struct {
-	urls map[string]*Url
+	urls   map[string]*Url
+	clicks map[string]int
 }
 
 /*
@@ -9,7 +10,10 @@ NovoRepositorioMemoria cria uma instância de um repositório em memória
 e retorna o seu ponteiro.
 */
 func NovoRepositorioMemoria() *repositorioMemoria {
-	return &repositorioMemoria{make(map[string]*Url)}
+	return &repositorioMemoria{
+		make(map[string]*Url),
+		make(map[string]int),
+	}
 }
 
 /*
@@ -51,4 +55,11 @@ func (rep *repositorioMemoria) Salvar(url Url) error {
 	rep.urls[url.Id] = &url
 
 	return nil
+}
+
+/*
+RegistrarClick incrementa o contador para uma url encurtada pelo serviço.
+*/
+func (rep *repositorioMemoria) RegistrarClick(id string) {
+	rep.clicks[id]++
 }

@@ -27,6 +27,7 @@ type Repositorio interface {
 	BuscarPorId(id string) *Url
 	BuscarPorUrl(url string) *Url
 	Salvar(url Url) error
+	RegistrarClick(id string)
 }
 
 type Url struct {
@@ -94,4 +95,11 @@ func Buscar(id string) (url *Url, ok bool) {
 	}
 
 	return url, ok
+}
+
+/*
+RegistrarClick registra uma 'click' para o id informado no servidor.
+*/
+func RegistrarClick(id string) {
+	repo.RegistrarClick(id)
 }
