@@ -27,12 +27,35 @@ type Repositorio interface {
 	BuscarPorId(id string) *Url
 	BuscarPorUrl(url string) *Url
 	Salvar(url Url) error
+	RegistrarClick(id string)
+	BuscarClicks(id string) int
 }
 
+/*
+Url representa uma url completa como destino, seu id como uma url encurtada e
+o momento de sua criação.
+*/
 type Url struct {
-	Id      string
-	Criacao time.Time
-	Destino string
+	Id      string    `json:"id"`
+	Criacao time.Time `json:"criacao"`
+	Destino string    `json:"destino"`
+}
+
+/*
+Stats busca os clicks de uma url e instancia Stats dos acessos de uma url.
+*/
+func (url *Url) Stats() *Stats {
+	clicks := repo.BuscarClicks(url.Id)
+
+	return &Stats{url, clicks}
+}
+
+/*
+Stats representa uma url com a quantidade de acessos registrados.
+*/
+type Stats struct {
+	URL    *Url `json:"url"`
+	Clicks int  `json:"clicks"`
 }
 
 func generateId() string {
@@ -94,4 +117,11 @@ func Buscar(id string) (url *Url, ok bool) {
 	}
 
 	return url, ok
+}
+
+/*
+RegistrarClick registra uma 'click' para o id informado no servidor.
+*/
+func RegistrarClick(id string) {
+	repo.RegistrarClick(id)
 }
