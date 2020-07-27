@@ -12,6 +12,7 @@ import (
 var (
 	porta   int
 	urlBase string
+	stats   chan string
 )
 
 func init() {
@@ -26,6 +27,10 @@ type Headers map[string]string
 
 func main() {
 	url.ConfigurarReposotirio(url.NovoRepositorioMemoria())
+
+	stats = make(chan string)
+	defer close(stats)
+	go registrarEstatisticas(stats)
 
 	http.HandleFunc("/api/encurtar", Encurtador)
 	http.HandleFunc("/r/", Redirecionador)
@@ -72,6 +77,8 @@ func Redirecionador(response http.ResponseWriter, request *http.Request) {
 
 	if urlEncontrada, ok := url.Buscar(id); ok {
 		http.Redirect(response, request, urlEncontrada.Destino, http.StatusMovedPermanently)
+
+		stats <- id
 	} else {
 		http.NotFound(response, request)
 	}
@@ -94,4 +101,11 @@ func responderCom(
 	}
 
 	response.WriteHeader(status)
+}
+
+func registrarEstatisticas(ids <-chan string) {
+	for id := range ids {
+		url.RegistrarClick(id)
+		fmt.Printf("Click registrado com sucesso para %s.\n", id)
+	}
 }
