@@ -28,6 +28,7 @@ type Repositorio interface {
 	BuscarPorUrl(url string) *Url
 	Salvar(url Url) error
 	RegistrarClick(id string)
+	BuscarClicks(id string) int
 }
 
 type Url struct {

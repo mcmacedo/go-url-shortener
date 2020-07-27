@@ -63,3 +63,10 @@ RegistrarClick incrementa o contador para uma url encurtada pelo serviço.
 func (rep *repositorioMemoria) RegistrarClick(id string) {
 	rep.clicks[id]++
 }
+
+/*
+BuscarClicks retorna a soma de clicks registrados para uma url.
+*/
+func (rep *repositorioMemoria) BuscarClicks(id string) int {
+	return rep.clicks[id]
+}
