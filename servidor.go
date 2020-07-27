@@ -51,7 +51,7 @@ func Encurtador(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	urlNova, nova, err := url.BuscarOuCriarNovaUrl(extrairUrl(request))
+	urlNova, nova, err := url.BuscarOuCriarNovaUrl(extrairURL(request))
 
 	if err != nil {
 		responderCom(response, http.StatusBadRequest, nil)
@@ -112,7 +112,7 @@ func Visualizador(response http.ResponseWriter, request *http.Request) {
 	}
 }
 
-func extrairUrl(request *http.Request) string {
+func extrairURL(request *http.Request) string {
 	url := make([]byte, request.ContentLength, request.ContentLength)
 	request.Body.Read(url)
 
