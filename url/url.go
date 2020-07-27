@@ -35,6 +35,12 @@ type Url struct {
 	Id      string
 	Criacao time.Time
 	Destino string
+/*
+Stats representa uma url com a quantidade de acessos registrados.
+*/
+type Stats struct {
+	URL    *Url `json:"url"`
+	Clicks int  `json:"clicks"`
 }
 
 func generateId() string {
