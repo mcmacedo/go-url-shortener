@@ -31,10 +31,25 @@ type Repositorio interface {
 	BuscarClicks(id string) int
 }
 
+/*
+Url representa uma url completa como destino, seu id como uma url encurtada e
+o momento de sua criação.
+*/
 type Url struct {
-	Id      string
-	Criacao time.Time
-	Destino string
+	Id      string    `json:"id"`
+	Criacao time.Time `json:"criacao"`
+	Destino string    `json:"destino"`
+}
+
+/*
+Stats busca os clicks de uma url e instancia Stats dos acessos de uma url.
+*/
+func (url *Url) Stats() *Stats {
+	clicks := repo.BuscarClicks(url.Id)
+
+	return &Stats{url, clicks}
+}
+
 /*
 Stats representa uma url com a quantidade de acessos registrados.
 */
