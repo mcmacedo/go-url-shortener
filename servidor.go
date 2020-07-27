@@ -60,14 +60,18 @@ func Encurtador(response http.ResponseWriter, request *http.Request) {
 
 	urlCurta := fmt.Sprintf("%s/r/%s", urlBase, urlNova.Id)
 	var status int
+	headers := Headers{"Location": urlCurta}
 
 	if nova {
 		status = http.StatusCreated
+		headers["Link"] = fmt.Sprintf(
+			"<%s/api/stats/%s>; rel=\"stats\"", urlBase, urlNova.Id)
+
 	} else {
 		status = http.StatusOK
 	}
 
-	responderCom(response, status, Headers{"Location": urlCurta})
+	responderCom(response, status, headers)
 }
 
 /*
