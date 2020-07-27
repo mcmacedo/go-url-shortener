@@ -2,19 +2,19 @@
 
 Este projeto consiste em um pequeno servidor web capaz de criar urls encurtador e realizar o redirecionamento para a url original.
 
-## Description
+## Descrição
 
 O projeto tem por finalidade consolidar conhecimento de estudos da linguagem de programação Go.
 
 O projeto é proposto no livro [Programando em GO](https://www.casadocodigo.com.br/products/livro-google-go?_pos=1&_sid=64f32ac46&_ss=r), da editora [Casa do Código](https://www.casadocodigo.com.br/), escrito por [Caio Filipini](https://github.com/caiofilipini).
 
-## Getting Started
+## Começando
 
-### Dependencies
+### Dependências
 
 * ...
 
-### Installing
+### Instalando
 
 * Para installar o projeto como uma dependência, mude o diretório para a raiz do projeto e utilize o comando abaixo:
 
@@ -23,7 +23,7 @@ go install
 ```
 
 
-### Executing program
+### Executando o programa
 
 * Para exectuar o programa quando estiver em desenvolvimento, mude o diretório para a raiz do projeto e utilize o comando abaixo:
 
@@ -42,7 +42,7 @@ go build
 ./go-url-shortner
 ```
 
-## Authors
+## Autores
 
 Contributors names and contact info
 
@@ -50,7 +50,7 @@ Contributors names and contact info
   - [@macedobical](https://twitter.com/macedobical)
 
 
-## License
+## Licença
 ```
 /*
  * ----------------------------------------------------------------------------
