@@ -16,15 +16,30 @@ O projeto é proposto no livro [Programando em GO](https://www.casadocodigo.com.
 
 ### Installing
 
-* ...
+* Para installar o projeto como uma dependência, mude o diretório para a raiz do projeto e utilize o comando abaixo:
+
+```
+go install
+```
 
 
 ### Executing program
 
-* ...
+* Para exectuar o programa quando estiver em desenvolvimento, mude o diretório para a raiz do projeto e utilize o comando abaixo:
 
 ```
-...
+go run ./servidor.go
+```
+
+* Para exectuar o programa quando estiver em produção, mude o diretório para a raiz do projeto e utilize o comando abaixo:
+
+```
+go build
+```
+
+* Será gerado o executável com o nome do projetom, de acordo com o nome da pasta do projeto. Execute este arquivo com o comando abaixo:
+```
+./go-url-shortner
 ```
 
 ## Authors
