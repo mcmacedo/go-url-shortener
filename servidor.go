@@ -13,7 +13,6 @@ import (
 var (
 	porta   int
 	urlBase string
-	stats   chan string
 )
 
 func init() {
@@ -26,15 +25,41 @@ Headers é um tipo 'map[string]string' para representar um cabeçalho http
 */
 type Headers map[string]string
 
+/*
+Redirecionador recupera a url original a partir do hash e realiza o redirect
+*/
+type Redirecionador struct {
+	stats chan string
+}
+
+/*
+ServeHTTP implementa o método da interface type http.Handler
+*/
+func (red *Redirecionador) ServeHTTP(
+	response http.ResponseWriter,
+	request *http.Request,
+) {
+	caminho := strings.Split(request.URL.Path, "/")
+	id := caminho[len(caminho)-1]
+
+	if urlEncontrada, ok := url.Buscar(id); ok {
+		http.Redirect(response, request, urlEncontrada.Destino, http.StatusMovedPermanently)
+
+		red.stats <- id
+	} else {
+		http.NotFound(response, request)
+	}
+}
+
 func main() {
 	url.ConfigurarReposotirio(url.NovoRepositorioMemoria())
 
-	stats = make(chan string)
+	stats := make(chan string)
 	defer close(stats)
 	go registrarEstatisticas(stats)
 
 	http.HandleFunc("/api/encurtar", Encurtador)
-	http.HandleFunc("/r/", Redirecionador)
+	http.Handle("/r/", &Redirecionador{stats})
 	http.HandleFunc("/api/stats/", Visualizador)
 
 	log.Fatal(http.ListenAndServe(
@@ -72,22 +97,6 @@ func Encurtador(response http.ResponseWriter, request *http.Request) {
 	}
 
 	responderCom(response, status, headers)
-}
-
-/*
-Redirecionador recupera a url original a partir do hash e realiza o redirect
-*/
-func Redirecionador(response http.ResponseWriter, request *http.Request) {
-	caminho := strings.Split(request.URL.Path, "/")
-	id := caminho[len(caminho)-1]
-
-	if urlEncontrada, ok := url.Buscar(id); ok {
-		http.Redirect(response, request, urlEncontrada.Destino, http.StatusMovedPermanently)
-
-		stats <- id
-	} else {
-		http.NotFound(response, request)
-	}
 }
 
 /*
