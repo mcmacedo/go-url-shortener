@@ -39,8 +39,7 @@ func (red *Redirecionador) ServeHTTP(
 	response http.ResponseWriter,
 	request *http.Request,
 ) {
-	caminho := strings.Split(request.URL.Path, "/")
-	id := caminho[len(caminho)-1]
+	id := extrairPathID(request)
 
 	if urlEncontrada, ok := url.Buscar(id); ok {
 		http.Redirect(response, request, urlEncontrada.Destino, http.StatusMovedPermanently)
@@ -103,8 +102,7 @@ func Encurtador(response http.ResponseWriter, request *http.Request) {
 Visualizador recupera os Stats de uma url e os retorna se for encontrada.
 */
 func Visualizador(response http.ResponseWriter, request *http.Request) {
-	caminho := strings.Split(request.URL.Path, "/")
-	id := caminho[len(caminho)-1]
+	id := extrairPathID(request)
 
 	if url, ok := url.Buscar(id); ok {
 		json, err := json.Marshal(url.Stats())
@@ -149,6 +147,11 @@ func responderComJSON(
 	})
 
 	fmt.Fprintf(response, json)
+}
+
+func extrairPathID(request *http.Request) string {
+	caminho := strings.Split(request.URL.Path, "/")
+	return caminho[len(caminho)-1]
 }
 
 func registrarEstatisticas(ids <-chan string) {
