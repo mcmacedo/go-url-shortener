@@ -59,6 +59,7 @@ func main() {
 	http.Handle("/r/", &Redirecionador{stats})
 	http.HandleFunc("/api/stats/", Visualizador)
 
+	logar("Iniciando servidor na porta %d...", porta)
 	log.Fatal(http.ListenAndServe(
 		fmt.Sprintf(":%d", porta), nil))
 }
@@ -94,6 +95,7 @@ func Encurtador(response http.ResponseWriter, request *http.Request) {
 	}
 
 	responderCom(response, status, headers)
+	logar("URL %s encurtada com sucesso para %s.", urlNova.Destino, urlCurta)
 }
 
 /*
@@ -165,6 +167,10 @@ func extrairPathID(request *http.Request) string {
 func registrarEstatisticas(ids <-chan string) {
 	for id := range ids {
 		url.RegistrarClick(id)
-		fmt.Printf("Click registrado com sucesso para %s.\n", id)
+		logar("Click registrado com sucesso para %s.", id)
 	}
+}
+
+func logar(formato string, valores ...interface{}) {
+	log.Printf(fmt.Sprintf("%s\n", formato), valores...)
 }
