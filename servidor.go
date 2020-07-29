@@ -39,16 +39,13 @@ func (red *Redirecionador) ServeHTTP(
 	response http.ResponseWriter,
 	request *http.Request,
 ) {
-	caminho := strings.Split(request.URL.Path, "/")
-	id := caminho[len(caminho)-1]
+	id := extrairPathID(request)
 
-	if urlEncontrada, ok := url.Buscar(id); ok {
-		http.Redirect(response, request, urlEncontrada.Destino, http.StatusMovedPermanently)
+	rotaFindOrNotFound(response, request, id, func(url *url.Url) {
+		http.Redirect(response, request, url.Destino, http.StatusMovedPermanently)
 
 		red.stats <- id
-	} else {
-		http.NotFound(response, request)
-	}
+	})
 }
 
 func main() {
@@ -103,10 +100,9 @@ func Encurtador(response http.ResponseWriter, request *http.Request) {
 Visualizador recupera os Stats de uma url e os retorna se for encontrada.
 */
 func Visualizador(response http.ResponseWriter, request *http.Request) {
-	caminho := strings.Split(request.URL.Path, "/")
-	id := caminho[len(caminho)-1]
+	id := extrairPathID(request)
 
-	if url, ok := url.Buscar(id); ok {
+	rotaFindOrNotFound(response, request, id, func(url *url.Url) {
 		json, err := json.Marshal(url.Stats())
 
 		if err != nil {
@@ -115,10 +111,7 @@ func Visualizador(response http.ResponseWriter, request *http.Request) {
 		}
 
 		responderComJSON(response, string(json))
-
-	} else {
-		http.NotFound(response, request)
-	}
+	})
 }
 
 func extrairURL(request *http.Request) string {
@@ -149,6 +142,24 @@ func responderComJSON(
 	})
 
 	fmt.Fprintf(response, json)
+}
+
+func rotaFindOrNotFound(
+	response http.ResponseWriter,
+	request *http.Request,
+	id string,
+	manager func(*url.Url),
+) {
+	if url, ok := url.Buscar(id); ok {
+		manager(url)
+	} else {
+		http.NotFound(response, request)
+	}
+}
+
+func extrairPathID(request *http.Request) string {
+	caminho := strings.Split(request.URL.Path, "/")
+	return caminho[len(caminho)-1]
 }
 
 func registrarEstatisticas(ids <-chan string) {
