@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -11,13 +12,18 @@ import (
 )
 
 var (
-	porta   int
-	urlBase string
+	porta     *int
+	logLigado *bool
+	urlBase   string
 )
 
 func init() {
-	porta = 8888
-	urlBase = fmt.Sprintf("http://localhost:%d", porta)
+	porta = flag.Int("p", 8888, "porta")
+	logLigado = flag.Bool("l", true, "log ligado/desligado")
+
+	flag.Parse()
+
+	urlBase = fmt.Sprintf("http://localhost:%d", *porta)
 }
 
 /*
@@ -59,9 +65,9 @@ func main() {
 	http.Handle("/r/", &Redirecionador{stats})
 	http.HandleFunc("/api/stats/", Visualizador)
 
-	logar("Iniciando servidor na porta %d...", porta)
+	logar("Iniciando servidor na porta %d...", *porta)
 	log.Fatal(http.ListenAndServe(
-		fmt.Sprintf(":%d", porta), nil))
+		fmt.Sprintf(":%d", *porta), nil))
 }
 
 /*
@@ -172,5 +178,7 @@ func registrarEstatisticas(ids <-chan string) {
 }
 
 func logar(formato string, valores ...interface{}) {
-	log.Printf(fmt.Sprintf("%s\n", formato), valores...)
+	if *logLigado {
+		log.Printf(fmt.Sprintf("%s\n", formato), valores...)
+	}
 }
